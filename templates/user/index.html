@@ -1,0 +1,106 @@
+{% extends 'template.html' %}
+
+{% block content_header %}
+<div class="container-fluid">
+  <div class="row mb-2">
+    <div class="col-sm-6">
+      <h1 class="m-0">Users</h1>
+    </div><!-- /.col -->
+    <div class="col-sm-6">
+      <ol class="breadcrumb float-sm-right">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+        <li class="breadcrumb-item active">Users</li>
+      </ol>
+    </div><!-- /.col -->
+  </div><!-- /.row -->
+</div><!-- /.container-fluid -->
+{% endblock %}
+
+{% block content %}
+<div class="table-responsive p-0">
+  <table class="table table-hover text-nowrap">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+        <th>{{ loop.index }}</th>
+        <td>{{ user.username }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.role }}</td>
+        <td>
+          {% if current_user.role == "ADMIN" %}
+          <form method="post" action="{{ url_for('user.delete_user') }}">
+            <input type="hidden" name="username" value="{{ user.username }}">
+            <input type="submit" class="btn btn-primary" value="Hapus">
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% if current_user.role == "ADMIN" %}
+<form method="post">
+  <div class="form-group">
+    <label for="exampleInputUsername">Username</label>
+    <input type="text" class="form-control" id="exampleInputUsername" placeholder="Enter username" name="username">
+  </div>
+  <div class="form-group">
+    <label for="exampleInputEmail1">Email address</label>
+    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email" name="email">
+  </div>
+  <div class="form-group">
+    <label>Password</label>
+    <input type="password" class="form-control" placeholder="Enter password" name="password">
+  </div>
+  <div class="form-group">
+    <label for="exampleInputRole">Role</label>
+    <select name="role" class="form-control">
+      <option value="ADMIN">ADMIN</option>
+      <option value="USER">USER</option>
+    </select>
+  </div>
+  <input type="submit" class="btn btn-primary" name="action" value="Simpan">
+</form>
+{% endif %}
+{% endblock %}
+
+{% block footer %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<script>
+  $(function () {
+    var Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000
+    });
+    {% for message in messages %}
+    {% if message == "create" %}
+    Toast.fire({
+      icon: 'success',
+      title: 'berhasil dibuat.'
+    })
+    {% endif %}
+    {% if message == "delete" %}
+    Toast.fire({
+      icon: 'success',
+      title: 'berhasil dihapus.'
+    })
+    {% endif %}
+    {% endfor %}
+  });
+</script>
+{% endif %}
+{% endwith %}
+{% endblock %}
